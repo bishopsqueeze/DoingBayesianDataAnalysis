@@ -8,7 +8,9 @@ BernGrid = function( Theta , pTheta , Data , plotType=c("Points","Bars")[2] ,
   # pTheta is prior probability mass at each value of Theta
   # Data is vector of 0's and 1's.
   
+  #------------------------------------------------------------------
   # Check for input errors:
+  #------------------------------------------------------------------
   if ( any( Theta > 1 | Theta < 0 ) ) {
     stop("Theta values must be between 0 and 1")
   }
@@ -22,23 +24,34 @@ BernGrid = function( Theta , pTheta , Data , plotType=c("Points","Bars")[2] ,
     stop("Data values must be 0 or 1")
   }
   
+  #------------------------------------------------------------------
   # Create summary values of Data
+  #------------------------------------------------------------------
   z = sum( Data ) # number of 1's in Data
   N = length( Data ) 
 
+  #------------------------------------------------------------------
   # Compute the Bernoulli likelihood at each value of Theta:
+  #------------------------------------------------------------------
   pDataGivenTheta = Theta^z * (1-Theta)^(N-z)
   
+  #------------------------------------------------------------------
   # Compute the evidence and the posterior via Bayes' rule:
+  #------------------------------------------------------------------
   pData = sum( pDataGivenTheta * pTheta )
   pThetaGivenData = pDataGivenTheta * pTheta / pData
   
+  #------------------------------------------------------------------
   # Plot the results.
+  #------------------------------------------------------------------
   layout( matrix( c( 1,2,3 ) ,nrow=3 ,ncol=1 ,byrow=FALSE ) ) # 3x1 panels
   par( mar=c(3,3,1,0) , mgp=c(2,0.7,0) , mai=c(0.5,0.5,0.3,0.1) ) # margins
   cexAxis = 1.33
   cexLab = 1.75
+  
+  #------------------------------------------------------------------
   # convert plotType to notation used by plot:
+  #------------------------------------------------------------------
   if ( plotType=="Points" ) { plotType="p" }
   if ( plotType=="Bars" ) { plotType="h" }
   dotsize = 5 # how big to make the plotted dots
@@ -52,7 +65,9 @@ BernGrid = function( Theta , pTheta , Data , plotType=c("Points","Bars")[2] ,
     thinIdx = 1:nteeth 
   }
 
+  #------------------------------------------------------------------
   # Plot the prior.
+  #------------------------------------------------------------------
   yLim = c(0,1.1*max(c(pTheta,pThetaGivenData)))
   plot( Theta[thinIdx] , pTheta[thinIdx] , type=plotType , 
         pch="." , cex=dotsize , lwd=barsize ,
@@ -84,7 +99,9 @@ BernGrid = function( Theta , pTheta , Data , plotType=c("Points","Bars")[2] ,
     }
   }
   
+  #------------------------------------------------------------------
   # Mark the highest density interval. HDI points are not thinned in the plot.
+  #------------------------------------------------------------------
   if ( showHDI ) {
     HDIinfo = HDIofGrid( pTheta , credMass=HDImass )
     points( Theta[ HDIinfo$indices ] , 
